@@ -10,11 +10,11 @@ There is currently no way to register an account for this application, but you c
 
 ## Running the tests
 
-Requires MySQL running on localhost:3306 with a database named heatmapdb.
+Requires MySQL running on `localhost:3306` with a database named `heatmapdb`.
 
 ## Building Docker Image
 
-./gradlew :web:buildDocker
+`./gradlew :web:buildDocker`
 
 ## Running
 
