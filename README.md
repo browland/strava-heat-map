@@ -23,7 +23,13 @@ Note that you need to change the values of `strava.oauth.clientId` and `strava.o
 ```
 docker run --name heatmapdb -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=heatmapdb -d mysql:5.7
 
-docker run --name strava-heat-map -e strava.oauth.clientId=myid -e strava.oauth.clientSecret=mysecret -d -p 8080:8080 --link heatmapdb:heatmapdb springio/strava-heat-map-web:1.0-SNAPSHOT 
+docker run --name strava-heat-map -e strava.oauth.clientId=myid -e strava.oauth.clientSecret=mysecret -d -p 8080:8080 --link heatmapdb:heatmapdb net.benrowland/strava-heat-map-web:1.0-SNAPSHOT
+```
+
+Check the application started successfully with:
+
+```
+docker logs strava-heat-map
 ```
 
 Navigate to http://localhost:8080/home.html

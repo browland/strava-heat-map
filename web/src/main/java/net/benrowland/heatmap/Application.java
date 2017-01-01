@@ -1,4 +1,4 @@
-package net.benrowland;
+package net.benrowland.heatmap;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
