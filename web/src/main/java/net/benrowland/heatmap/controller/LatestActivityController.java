@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
 
 @RestController
 public class LatestActivityController {
@@ -21,7 +22,7 @@ public class LatestActivityController {
     private RecentActivitiesStreamsService recentActivitiesStreamsService;
 
     @RequestMapping(path = "/latestActivity", produces = "application/json")
-    public Stream[] getLatestActivity(HttpSession httpSession) throws StravaApiException {
+    public Stream[] getLatestActivity(HttpSession httpSession) throws StravaApiException, IOException {
         StravaUserEntity stravaUserEntity = (StravaUserEntity) httpSession.getAttribute("StravaUser");
         if(stravaUserEntity == null) {
             throw new ForbiddenException();

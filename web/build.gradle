@@ -21,6 +21,7 @@ dependencies {
     compile("org.springframework.boot:spring-boot-devtools")
     compile("mysql:mysql-connector-java")
     compile("org.hibernate:hibernate-java8")
+    compile("com.google.guava:guava:11.0.2")
 
     testCompile("org.springframework.boot:spring-boot-starter-test")
 }

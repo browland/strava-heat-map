@@ -12,6 +12,7 @@ public class OAuthCompletionResponseConverter {
         stravaUserEntity.setUsername(username);
         stravaUserEntity.setStravaUsername(oAuthCompletionResponse.getAthlete().getUsername());
         stravaUserEntity.setAccessToken(oAuthCompletionResponse.getAccessToken());
+        stravaUserEntity.setSyncRequired(true);
 
         return stravaUserEntity;
     }

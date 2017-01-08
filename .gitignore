@@ -5,4 +5,5 @@
 *.ipr
 build/
 web/src/main/resources/data.sql
+server/src/main/resources/data.sql
 

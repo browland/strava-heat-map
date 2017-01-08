@@ -21,13 +21,13 @@ public class OAuthClient {
     @Autowired
     private RestTemplate restTemplate;
 
-    @Value("${strava.oauth.completion.completionUri}")
+    @Value("${strava.oauth.completionUri}")
     private String completionUri;
 
-    @Value("${strava.oauth.clientSecret}")
+    @Value("${strava.client.clientSecret}")
     private String clientSecret;
 
-    @Value("${strava.oauth.clientId}")
+    @Value("${strava.client.clientId}")
     private String clientId;
 
     public OAuthCompletionResponse authorise(final String authorisationCode) throws StravaApiException {

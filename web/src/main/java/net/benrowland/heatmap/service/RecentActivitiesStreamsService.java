@@ -1,31 +1,30 @@
 package net.benrowland.heatmap.service;
 
-import net.benrowland.heatmap.client.ActivityClient;
 import net.benrowland.heatmap.client.StravaApiException;
-import net.benrowland.heatmap.client.StreamClient;
-import net.benrowland.heatmap.dto.Activity;
 import net.benrowland.heatmap.dto.Stream;
 import net.benrowland.heatmap.entity.StravaUserEntity;
+import net.benrowland.heatmap.entity.StreamEntity;
+import net.benrowland.heatmap.repository.StreamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class RecentActivitiesStreamsService {
     @Autowired
-    private ActivityClient activityClient;
+    private StreamRepository streamRepository;
 
     @Autowired
-    private StreamClient streamClient;
+    private StreamEntityConverter streamEntityConverter;
 
-    public Stream[] streamsForRecentActivities(StravaUserEntity stravaUserEntity) throws StravaApiException {
-        Activity[] activities = activityClient.getActivities(stravaUserEntity);
-
-        List<Stream> streams = new ArrayList<>(activities.length);
-        for(Activity activity : activities) {
-            streams.add(streamClient.getStream(activity.getId()));
+    public Stream[] streamsForRecentActivities(StravaUserEntity stravaUserEntity) throws StravaApiException, IOException {
+        Iterable<StreamEntity> streamEntities = streamRepository.findAll();
+        List<Stream> streams = new ArrayList<>();
+        for(StreamEntity streamEntity : streamEntities) {
+            streams.add(streamEntityConverter.convert(streamEntity));
         }
 
         return streams.toArray(new Stream[streams.size()]);

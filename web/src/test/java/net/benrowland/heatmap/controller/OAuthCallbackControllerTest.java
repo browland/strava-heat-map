@@ -31,7 +31,7 @@ public class OAuthCallbackControllerTest {
                 get("/token_exchange").
                 param("state", USERNAME).
                 param("code", AUTHORISATION_CODE)).
-                andExpect(status().isOk());
+                andExpect(status().is3xxRedirection());
 
         then(oAuthService).should().authorise(USERNAME, AUTHORISATION_CODE);
     }

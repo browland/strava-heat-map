@@ -4,8 +4,6 @@ public class LatLng {
     private Double lat;
     private Double lng;
 
-    public LatLng() { }
-
     LatLng(Double lat, Double lng) {
         this.lat = lat;
         this.lng = lng;

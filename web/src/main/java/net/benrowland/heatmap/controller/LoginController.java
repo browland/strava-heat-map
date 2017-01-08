@@ -7,6 +7,7 @@ import net.benrowland.heatmap.service.StravaUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -19,13 +20,16 @@ import java.io.IOException;
 @RestController
 public class LoginController {
     private static final Logger logger = LoggerFactory.getLogger(LoginController.class);
-    private static final String STRAVA_CONNECT_URL = "https://www.strava.com/oauth/authorize?client_id=15346&response_type=code&redirect_uri=http://localhost:8080/token_exchange/&approval_prompt=force&state=%s";
+    private static final String STRAVA_CONNECT_URL = "https://www.strava.com/oauth/authorize?client_id=15346&response_type=code&redirect_uri=%stoken_exchange/&approval_prompt=force&state=%s";
 
     @Autowired
     private LoginService loginService;
 
     @Autowired
     private StravaUserService stravaUserService;
+
+    @Value("${external.endpointUrl}")
+    private String externalEndpointUrl;
 
     @RequestMapping(path = "/login", method = RequestMethod.POST)
     public void login(@RequestParam String username, @RequestParam String password, HttpSession httpSession, HttpServletResponse httpServletResponse) throws IOException {
@@ -38,12 +42,12 @@ public class LoginController {
 
         StravaUserEntity stravaUserEntity = stravaUserService.findStravaUser(username);
         if(stravaUserEntity == null || stravaUserEntity.getAccessToken() == null) {
-            String stravaConnectUrl = String.format(STRAVA_CONNECT_URL, username);
+            String stravaConnectUrl = String.format(STRAVA_CONNECT_URL, externalEndpointUrl, username);
             httpServletResponse.sendRedirect(stravaConnectUrl);
         }
         else {
             httpSession.setAttribute("StravaUser", stravaUserEntity);
-            httpServletResponse.sendRedirect("http://localhost:8080/home.html");
+            httpServletResponse.sendRedirect("/home.html");
         }
     }
 }

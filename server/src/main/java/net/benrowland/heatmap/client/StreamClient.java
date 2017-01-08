@@ -1,6 +1,5 @@
 package net.benrowland.heatmap.client;
 
-import net.benrowland.heatmap.ForbiddenException;
 import net.benrowland.heatmap.dto.Stream;
 import net.benrowland.heatmap.entity.StravaUserEntity;
 import org.slf4j.Logger;
@@ -29,11 +28,9 @@ public class StreamClient {
     @Autowired
     private HttpSession httpSession;
 
-    public Stream getStream(long activityId) throws StravaApiException {
-        StravaUserEntity stravaUserEntity = (StravaUserEntity) httpSession.getAttribute("StravaUser");
+    public Stream getStream(StravaUserEntity stravaUserEntity, long activityId) throws StravaApiException {
         if(stravaUserEntity == null) {
-            logger.error("Strava user is null - user was unauthenticated?");
-            throw new ForbiddenException();
+            throw new IllegalArgumentException("Strava user is null");
         }
 
         logger.info("Retrieving activity {} stream for athlete {}", activityId, stravaUserEntity.getStravaUsername());
@@ -51,6 +48,7 @@ public class StreamClient {
                 if("latlng".equals(responseMap.get("type"))) {
                     List<List<Double>> latLngs = (List<List<Double>>)responseMap.get("data");
                     Stream stream = new Stream();
+                    stream.setActivityId(activityId);
                     stream.setData(latLngs);
                     return stream;
                 }

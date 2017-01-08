@@ -16,6 +16,9 @@ public class StravaUserEntity {
     @Column(nullable = false, name = "access_token")
     private String accessToken;
 
+    @Column(nullable = false, name = "sync_required")
+    private boolean syncRequired;
+
     public String getUsername() {
         return username;
     }
@@ -40,6 +43,14 @@ public class StravaUserEntity {
         this.accessToken = accessToken;
     }
 
+    public boolean isSyncRequired() {
+        return syncRequired;
+    }
+
+    public void setSyncRequired(boolean syncRequired) {
+        this.syncRequired = syncRequired;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -47,6 +58,7 @@ public class StravaUserEntity {
 
         StravaUserEntity that = (StravaUserEntity) o;
 
+        if (syncRequired != that.syncRequired) return false;
         if (!username.equals(that.username)) return false;
         if (!stravaUsername.equals(that.stravaUsername)) return false;
         return accessToken.equals(that.accessToken);
@@ -57,6 +69,7 @@ public class StravaUserEntity {
         int result = username.hashCode();
         result = 31 * result + stravaUsername.hashCode();
         result = 31 * result + accessToken.hashCode();
+        result = 31 * result + (syncRequired ? 1 : 0);
         return result;
     }
 
@@ -66,6 +79,7 @@ public class StravaUserEntity {
                 "username='" + username + '\'' +
                 ", stravaUsername='" + stravaUsername + '\'' +
                 ", accessToken='" + accessToken + '\'' +
+                ", syncRequired=" + syncRequired +
                 '}';
     }
 }

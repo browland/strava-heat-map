@@ -2,4 +2,5 @@ rootProject.name = 'strava-heat-map'
 
 include 'web'
 include 'domain'
+include 'server'
 

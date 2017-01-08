@@ -1,12 +1,14 @@
 package net.benrowland.heatmap.client;
 
-import net.benrowland.heatmap.ForbiddenException;
 import net.benrowland.heatmap.dto.Activity;
 import net.benrowland.heatmap.entity.StravaUserEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
@@ -21,8 +23,7 @@ public class ActivityClient {
 
     public Activity[] getActivities(StravaUserEntity stravaUserEntity) throws StravaApiException {
         if(stravaUserEntity == null) {
-            logger.error("Strava user is null - user was unauthenticated?");
-            throw new ForbiddenException();
+            throw new IllegalArgumentException("Strava user is null");
         }
 
         logger.info("Retrieving latest activities for athlete " + stravaUserEntity.getStravaUsername());

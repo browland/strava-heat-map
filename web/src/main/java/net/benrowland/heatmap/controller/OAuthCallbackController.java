@@ -10,6 +10,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
 @RestController
 public class OAuthCallbackController {
     private static final Logger logger = LoggerFactory.getLogger(OAuthCallbackController.class);
@@ -18,9 +21,14 @@ public class OAuthCallbackController {
     private OAuthService oAuthService;
 
     @RequestMapping(path = "/token_exchange", method = RequestMethod.GET)
-    public void tokenExchange(@RequestParam String state, @RequestParam("code") String authorisationCode) throws StravaApiException {
+    public void tokenExchange(@RequestParam String state,
+                              @RequestParam("code") String authorisationCode,
+                              HttpServletResponse httpServletResponse) throws StravaApiException, IOException {
         logger.info("Received OAuth callback state (user name) {}, authorisation code {}", state, authorisationCode);
 
         oAuthService.authorise(state, authorisationCode);
+
+        // TODO this is failing and bouncing back to the login page
+        httpServletResponse.sendRedirect("/home.html");
     }
 }
