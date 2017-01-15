@@ -5,6 +5,5 @@
 *.ipr
 build/
 classes/
-web/src/main/resources/data.sql
-server/src/main/resources/data.sql
+config/
 

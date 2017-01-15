@@ -24,12 +24,14 @@ public class OAuthService {
     @Autowired
     private StravaUserRepository stravaUserRepository;
 
-    public void authorise(String username, String authorisationCode) throws StravaApiException {
+    public StravaUserEntity authorise(String username, String authorisationCode) throws StravaApiException {
         OAuthCompletionResponse oAuthCompletionResponse = oAuthClient.authorise(authorisationCode);
 
         StravaUserEntity stravaUserEntity = OAuthCompletionResponseConverter.convert(username, oAuthCompletionResponse);
         stravaUserRepository.save(stravaUserEntity);
 
         logger.info("Saved session token for OAuth callback {}", stravaUserEntity);
+
+        return stravaUserEntity;
     }
 }

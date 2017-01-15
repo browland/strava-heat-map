@@ -1,6 +1,7 @@
 package net.benrowland.heatmap.controller;
 
 import net.benrowland.heatmap.client.StravaApiException;
+import net.benrowland.heatmap.entity.StravaUserEntity;
 import net.benrowland.heatmap.service.OAuthService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
 @RestController
@@ -23,12 +25,13 @@ public class OAuthCallbackController {
     @RequestMapping(path = "/token_exchange", method = RequestMethod.GET)
     public void tokenExchange(@RequestParam String state,
                               @RequestParam("code") String authorisationCode,
+                              HttpSession httpSession,
                               HttpServletResponse httpServletResponse) throws StravaApiException, IOException {
         logger.info("Received OAuth callback state (user name) {}, authorisation code {}", state, authorisationCode);
 
-        oAuthService.authorise(state, authorisationCode);
+        StravaUserEntity stravaUserEntity = oAuthService.authorise(state, authorisationCode);
+        httpSession.setAttribute("StravaUser", stravaUserEntity);
 
-        // TODO this is failing and bouncing back to the login page
         httpServletResponse.sendRedirect("/home.html");
     }
 }
