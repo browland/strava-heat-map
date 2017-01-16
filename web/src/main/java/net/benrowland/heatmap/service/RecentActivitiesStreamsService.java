@@ -21,7 +21,7 @@ public class RecentActivitiesStreamsService {
     private StreamEntityConverter streamEntityConverter;
 
     public Stream[] streamsForRecentActivities(StravaUserEntity stravaUserEntity) throws StravaApiException, IOException {
-        Iterable<StreamEntity> streamEntities = streamRepository.findAll();
+        Iterable<StreamEntity> streamEntities = streamRepository.findAllByStravaUsername(stravaUserEntity.getStravaUsername());
         List<Stream> streams = new ArrayList<>();
         for(StreamEntity streamEntity : streamEntities) {
             streams.add(streamEntityConverter.convert(streamEntity));

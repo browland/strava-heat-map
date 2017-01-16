@@ -15,6 +15,9 @@ public class StreamEntity {
     @Column(nullable = false, name = "latLngData", length = 10000)
     private String latLngStream;
 
+    @Column(nullable = false, name = "strava_username")
+    private String stravaUsername;
+
     public Long getActivityId() {
         return activityId;
     }
@@ -29,5 +32,13 @@ public class StreamEntity {
 
     public void setLatLngStream(String latLngStream) {
         this.latLngStream = latLngStream;
+    }
+
+    public String getStravaUsername() {
+        return stravaUsername;
+    }
+
+    public void setStravaUsername(String stravaUsername) {
+        this.stravaUsername = stravaUsername;
     }
 }

@@ -44,7 +44,7 @@ public class NewUserTask {
             List<Stream> streams = recentActivitiesStreamsService.streamsForRecentActivities(stravaUserEntity);
 
             for(Stream stream : streams) {
-                StreamEntity streamEntity = streamConverter.convert(stream);
+                StreamEntity streamEntity = streamConverter.convert(stream, stravaUserEntity);
                 streamRepository.save(streamEntity);
             }
 
