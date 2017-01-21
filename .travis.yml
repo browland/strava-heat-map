@@ -13,7 +13,7 @@ branches:
     - master
 
 script:
-  - ./gradlew -Dspring.datasource.username=root -Dspring.datasource.password= clean build
+  - ./gradlew --info -Dspring.datasource.username=root -Dspring.datasource.password= clean build
 
 cache:
   directories:
