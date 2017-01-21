@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/browland/strava-heat-map.svg?branch=master)](https://travis-ci.org/browland/strava-heat-map)
+
 # Strava Heat Map
 
 A Spring Boot application which displays a heat map of areas in which a Strava user has participated in activities.
