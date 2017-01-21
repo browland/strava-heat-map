@@ -27,7 +27,6 @@ public class RecentActivitiesStreamsService {
     @Autowired
     private StreamClient streamClient;
 
-
     public List<Stream> streamsForRecentActivities(StravaUserEntity stravaUserEntity) throws StravaApiException, JsonProcessingException {
         Activity[] activities = activityClient.getActivities(stravaUserEntity);
 

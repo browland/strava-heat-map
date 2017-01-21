@@ -12,6 +12,7 @@ dependencies {
     compile("org.springframework.boot:spring-boot-devtools")
     compile("mysql:mysql-connector-java")
     compile("org.hibernate:hibernate-java8")
+    compile("de.micromata.jak:JavaAPIforKml:2.2.0")
 
     testCompile("org.springframework.boot:spring-boot-starter-test")
 }

@@ -7,6 +7,7 @@ import net.benrowland.heatmap.entity.StravaUserEntity;
 import net.benrowland.heatmap.entity.StreamEntity;
 import net.benrowland.heatmap.repository.StravaUserRepository;
 import net.benrowland.heatmap.repository.StreamRepository;
+import net.benrowland.heatmap.service.KmlGenerationService;
 import net.benrowland.heatmap.service.RecentActivitiesStreamsService;
 import net.benrowland.heatmap.service.StreamConverter;
 import org.slf4j.Logger;
@@ -33,6 +34,9 @@ public class NewUserTask {
     @Autowired
     private StreamRepository streamRepository;
 
+    @Autowired
+    private KmlGenerationService kmlGenerationService;
+
     @Scheduled(fixedRate = 5000)
     public void pollForNewUsers() throws StravaApiException, JsonProcessingException {
         List<StravaUserEntity> stravaUsersToSync = stravaUserRepository.findBySyncRequired(true);
@@ -47,8 +51,10 @@ public class NewUserTask {
                 StreamEntity streamEntity = streamConverter.convert(stream, stravaUserEntity);
                 streamRepository.save(streamEntity);
             }
-
             logger.info("Processed {} streams for user {}", streams.size(), stravaUserEntity);
+
+            kmlGenerationService.generateKmlDocument(stravaUserEntity);
+            logger.info("Generated KML document for user {}", stravaUserEntity.getStravaUsername());
 
             stravaUserEntity.setSyncRequired(false);
             stravaUserRepository.save(stravaUserEntity);
