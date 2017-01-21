@@ -1,24 +1,13 @@
-group 'net.benrowland'
-version '1.0-SNAPSHOT'
-
-apply plugin: 'java'
-apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
 
 configurations {
     jar.baseName = 'strava-heat-map-server'
 }
 
-repositories {
-    mavenCentral()
-}
-
 dependencies {
     compile project(":domain")
 
-    // TODO not needed?
     compile("org.springframework.boot:spring-boot-starter-web")
-
     compile("org.springframework.boot:spring-boot-starter-data-jpa")
     compile("org.springframework.boot:spring-boot-devtools")
     compile("mysql:mysql-connector-java")

@@ -1,16 +1,7 @@
-group 'net.benrowland'
-version '1.0-SNAPSHOT'
-
-apply plugin: 'java'
-apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
 
 configurations {
     jar.baseName = 'strava-heat-map-web'
-}
-
-repositories {
-    mavenCentral()
 }
 
 dependencies {
@@ -29,7 +20,6 @@ dependencies {
 // Docker image build
 group = 'net.benrowland'
 apply plugin: 'docker'
-
 
 task buildDocker(type: Docker, dependsOn: build) {
     push = false
