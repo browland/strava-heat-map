@@ -6,9 +6,19 @@ jdk:
 os:
   - linux
 
+sudo: false
+
 branches:
   only:
     - master
 
 script:
   - ./gradlew clean build
+
+cache:
+  directories:
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
+
+services:
+  - mysql

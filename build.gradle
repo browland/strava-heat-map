@@ -32,6 +32,12 @@ subprojects {
             mavenBom("org.springframework.boot:spring-boot-dependencies:${springBootVersion}")
         }
     }
+
+    // Issue #9 - we have to copy all Gradle JVM args to the forked test process so we can set the
+    // datasource properties when running on Travis CI.
+    tasks.withType(Test) {
+        systemProperties = System.properties
+    }
 }
 
 dependencies {
