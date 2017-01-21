@@ -41,7 +41,17 @@ and also insert a row into the `strava_user` table with `sync_required=1` and wi
 with your Strava user account.  You will need to somehow use the Strava Authentication API to get this access token if you're not hosting 
 the application externally.
 
+E.g.:
+
+```
+insert into user (username, password) values ('ben', 'mypassword');
+
+insert into strava_user (username, access_token, strava_username, sync_required)
+values ('ben', 'myaccesstoken', 'my_strava_username', 1);
+```
+
+Your Strava data will now be populated by the server process once the `strava_user` row was populated with `sync_required=1`. 
+Progress should appear in the output of `docker-compose`.
+
 Navigate to `http://localhost:8080/home.html`
 
-Your Strava data will have been populated by the server process once the `strava_user` row was populated with `sync_required=1` so should
-be visible on the map.
