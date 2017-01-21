@@ -33,30 +33,15 @@ The docker images will be installed to your Docker environment in the usual way.
 
 ## Running
 
-Note that you need to change the values of `strava.client.clientId` and `strava.client.clientSecret` to your own values.  You'll get these when you register for Strava API access.
-You can also provide a `-e external.endpointUrl` environment variable when running the web container if running on a domain on the web.  
-There should be a trailing slash, e.g.: 
+To run the `server` and `web` Docker containers, just run `docker-compose up` in the root project directory.  
+You'll need to set the environment variables referenced in `docker-compose.yml` to your own values.
 
-`-e external.endpointUrl='http://mydomain.com/'`
-
-```
-docker run --name heatmapdb -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=heatmapdb -d mysql:5.7
-
-docker run --name strava-heat-map-web -e strava.client.clientId=myid -e strava.client.clientSecret=mysecret -d -p 8080:8080 --link heatmapdb:heatmapdb net.benrowland/strava-heat-map-web:1.0-SNAPSHOT
-
-docker run --name strava-heat-map-server -e strava.client.clientId=myid -e strava.client.clientSecret=mysecret -d -p 8081:8081 --link heatmapdb:heatmapdb net.benrowland/strava-heat-map-server:1.0-SNAPSHOT
-```
-
-Check the application started successfully with:
-
-```
-docker logs strava-heat-map-web
-
-docker logs strava-heat-map-server
-```
+There is currently no way to register a new account for this application using the UI.  However, you can insert a row into the `user` table, 
+and also insert a row into the `strava_user` table with `sync_required=1` and with the `access_token` which associates your API account 
+with your Strava user account.  You will need to somehow use the Strava Authentication API to get this access token if you're not hosting 
+the application externally.
 
 Navigate to `http://localhost:8080/home.html`
 
-There is currently no way to register an account for this application using the UI.  However, you can insert a row into the `user` table, 
-and then navigate to `http://localhost:8080/login1.html` to authorise the application with your Strava account.  
-Your Strava data will be populated by the application upon authorisation with Strava and should then be visible at the home URL above.
+Your Strava data will have been populated by the server process once the `strava_user` row was populated with `sync_required=1` so should
+be visible on the map.

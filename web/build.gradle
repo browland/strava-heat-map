@@ -18,7 +18,7 @@ dependencies {
 }
 
 // Docker image build
-group = 'net.benrowland'
+group = 'net.benrowland.stravaheatmap'
 apply plugin: 'docker'
 
 task buildDocker(type: Docker, dependsOn: build) {

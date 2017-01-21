@@ -1,0 +1,35 @@
+version: '2'
+
+services:
+  database:
+    image: mysql:5.7
+    container_name: heatmapdb
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=heatmapdb
+
+  server:
+    image: net.benrowland.stravaheatmap/strava-heat-map-server:1.0-SNAPSHOT
+    container_name: strava-heat-map-server
+    environment:
+      - strava.client.clientId=${STRAVA_CLIENT_ID}
+      - strava.client.clientSecret=${STRAVA_CLIENT_SECRET}
+      - spring.datasource.url=jdbc:mysql://heatmapdb:3306/heatmapdb
+      - spring.datasource.password=${MYSQL_ROOT_PASSWORD}
+    depends_on:
+      - database
+
+  web:
+    image: net.benrowland.stravaheatmap/strava-heat-map-web:1.0-SNAPSHOT
+    container_name: strava-heat-map-web
+    ports:
+      - '8080:8080'
+    environment:
+      - strava.client.clientId=${STRAVA_CLIENT_ID}
+      - strava.client.clientSecret=${STRAVA_CLIENT_SECRET}
+      - VIRTUAL_HOST=${VIRTUAL_HOST}
+      - external.endpointUrl=${EXTERNAL_ENDPOINT_URL}
+      - spring.datasource.url=jdbc:mysql://heatmapdb:3306/heatmapdb
+      - spring.datasource.password=${MYSQL_ROOT_PASSWORD}
+    depends_on:
+      - database
