@@ -2,20 +2,34 @@
 
 A Spring Boot application which displays a heat map of areas in which a Strava user has participated in activities.
 
-The project is composed of several modules: web and server (for back-end processing). 
+## Requirements
 
-You'll need to get Strava API access to use this.
+- You'll need to get Strava API access to run the application as it requires access keys.
+- You'll also need to be running a Docker daemon on the build machine if you want to run the docker tasks to build images.
 
-There is currently no way to register an account for this application, but you can populate `user` and `strava_user` records to gain access.
+## Structure
+
+The project is composed of several modules:
+
+- `web`: executable Spring Boot module for API endpoints and static web resources
+- `server`: executable Spring Boot module for back-end processing 
+- `domain`: common domain model, shared by `web` and `server` modules
+
+The web and server modules can be built into separate Docker images using the `buildDocker` gradle task.
 
 ## Running the tests
 
 Requires MySQL running on `localhost:3306` with a database named `heatmapdb`.
 
-## Building Docker Image
+`./gradlew clean test`
 
-`./gradlew :web:buildDocker`
-`./gradlew :server:buildDocker`
+## Building Docker Images
+
+If you are running a Docker daemon, you can build Docker images for the `server` and `web` processes using a Gradle task.  From the root directory:
+
+`./gradlew clean buildDocker`
+
+The docker images will be installed to your Docker environment in the usual way.
 
 ## Running
 
@@ -41,5 +55,8 @@ docker logs strava-heat-map-web
 docker logs strava-heat-map-server
 ```
 
-Navigate to http://localhost:8080/home.html
+Navigate to `http://localhost:8080/home.html`
 
+There is currently no way to register an account for this application using the UI.  However, you can insert a row into the `user` table, 
+and then navigate to `http://localhost:8080/login1.html` to authorise the application with your Strava account.  
+Your Strava data will be populated by the application upon authorisation with Strava and should then be visible at the home URL above.
