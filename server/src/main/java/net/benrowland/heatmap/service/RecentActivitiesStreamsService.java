@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class RecentActivitiesStreamsService {
@@ -33,11 +34,11 @@ public class RecentActivitiesStreamsService {
 
         List<Stream> streams = new ArrayList<>(activities.length);
         for(Activity activity : activities) {
-            Stream stream = streamClient.getStream(stravaUserEntity, activity.getId());
-            streams.add(stream);
+            Optional<Stream> optionalStream = streamClient.getStream(stravaUserEntity, activity.getId());
+            optionalStream.ifPresent(streams::add);
         }
 
-        logger.info("Found {} streams for user {}", streams.size(), stravaUserEntity.getStravaUsername());
+        logger.info("Successfully processed {} streams for user {}", streams.size(), stravaUserEntity.getStravaUsername());
 
         return streams;
     }

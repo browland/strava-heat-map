@@ -4,6 +4,8 @@ services:
   database:
     image: mysql:5.7
     container_name: heatmapdb
+    volumes:
+      - heatmapdbdata:/var/lib/mysql
     environment:
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
       - MYSQL_DATABASE=heatmapdb
@@ -33,3 +35,7 @@ services:
       - spring.datasource.password=${MYSQL_ROOT_PASSWORD}
     depends_on:
       - database
+
+volumes:
+  heatmapdbdata:
+    driver: local

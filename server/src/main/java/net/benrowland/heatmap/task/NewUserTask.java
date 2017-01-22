@@ -41,15 +41,21 @@ public class NewUserTask {
         }
 
         for(StravaUserEntity stravaUserEntity : stravaUsersToSync) {
-            List<Stream> streams = recentActivitiesStreamsService.streamsForRecentActivities(stravaUserEntity);
+            try {
+                List<Stream> streams = recentActivitiesStreamsService.streamsForRecentActivities(stravaUserEntity);
 
-            for(Stream stream : streams) {
-                StreamEntity streamEntity = streamConverter.convert(stream, stravaUserEntity);
-                streamRepository.save(streamEntity);
+                for (Stream stream : streams) {
+                    StreamEntity streamEntity = streamConverter.convert(stream, stravaUserEntity);
+                    streamRepository.save(streamEntity);
+                }
+
+                logger.info("Processed {} streams for user {}", streams.size(), stravaUserEntity);
+            }
+            catch(StravaApiException e) {
+                logger.error("Could not sync user " + stravaUserEntity.getStravaUsername(), e);
             }
 
-            logger.info("Processed {} streams for user {}", streams.size(), stravaUserEntity);
-
+            // Unconditionally mark the user as processed so we don't keep re-trying if sync failed
             stravaUserEntity.setSyncRequired(false);
             stravaUserRepository.save(stravaUserEntity);
         }

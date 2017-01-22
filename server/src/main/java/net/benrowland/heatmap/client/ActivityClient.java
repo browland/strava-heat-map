@@ -10,13 +10,14 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
 @Component
 public class ActivityClient {
     private static final Logger logger = LoggerFactory.getLogger(ActivityClient.class);
 
-    private static final String URL = "https://www.strava.com/api/v3/athlete/activities?per_page=10";
+    private static final String URL = "https://www.strava.com/api/v3/athlete/activities?per_page=100";
 
     @Autowired
     private RestTemplate restTemplate;
@@ -31,13 +32,13 @@ public class ActivityClient {
         headers.add("Authorization", "Bearer " + stravaUserEntity.getAccessToken());
 
         HttpEntity requestEntity = new HttpEntity<>(headers);
-        ResponseEntity<Activity[]> response = restTemplate.exchange(URL, HttpMethod.GET, requestEntity, Activity[].class);
-
-        if(response.getStatusCode().is2xxSuccessful()) {
+        ResponseEntity<Activity[]> response = null;
+        try {
+            response = restTemplate.exchange(URL, HttpMethod.GET, requestEntity, Activity[].class);
             logger.info("Successfully retrieved latest activities for athlete " + stravaUserEntity.getStravaUsername());
             return response.getBody();
         }
-        else {
+        catch(HttpStatusCodeException e) {
             throw new StravaApiException("Unexpected response from activity endpoint " + response.getStatusCode());
         }
     }
