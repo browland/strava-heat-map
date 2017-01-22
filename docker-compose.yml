@@ -9,7 +9,7 @@ services:
       - MYSQL_DATABASE=heatmapdb
 
   server:
-    image: net.benrowland.stravaheatmap/strava-heat-map-server:1.0-SNAPSHOT
+    image: benrowland.net:5000/strava-heat-map-server:1.0-SNAPSHOT
     container_name: strava-heat-map-server
     environment:
       - strava.client.clientId=${STRAVA_CLIENT_ID}
@@ -20,7 +20,7 @@ services:
       - database
 
   web:
-    image: net.benrowland.stravaheatmap/strava-heat-map-web:1.0-SNAPSHOT
+    image: benrowland.net:5000/strava-heat-map-web:1.0-SNAPSHOT
     container_name: strava-heat-map-web
     ports:
       - '8080:8080'
