@@ -18,12 +18,12 @@ dependencies {
 }
 
 // Docker image build
-group = 'net.benrowland.stravaheatmap'
+group = 'benrowland.net:5000'
 apply plugin: 'docker'
 
 task buildDocker(type: Docker, dependsOn: build) {
     tagVersion = 'kml-experiment'
-    push = false
+    push = true
     applicationName = jar.baseName
     dockerfile = file('src/main/docker/Dockerfile')
     doFirst {
