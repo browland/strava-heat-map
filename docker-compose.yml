@@ -23,7 +23,7 @@ services:
     image: benrowland.net:5000/strava-heat-map-web:1.0-SNAPSHOT
     container_name: strava-heat-map-web
     ports:
-      - '8080:8080'
+      - '8000:8080'
     environment:
       - strava.client.clientId=${STRAVA_CLIENT_ID}
       - strava.client.clientSecret=${STRAVA_CLIENT_SECRET}
