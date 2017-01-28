@@ -37,7 +37,12 @@ subprojects {
     // datasource properties when running on Travis CI.
     tasks.withType(Test) {
         systemProperties = System.properties
+
+        // Jacoco requires this after overriding systemProperties above
+        systemProperties['user.dir'] = workingDir
     }
+
+    apply plugin: "jacoco"
 }
 
 dependencies {
@@ -46,6 +51,7 @@ dependencies {
     compile("org.springframework.boot:spring-boot-devtools")
     compile("mysql:mysql-connector-java")
     compile("org.hibernate:hibernate-java8")
+    compile("org.mockito:mockito-all:1.10.19")
 
     testCompile("org.springframework.boot:spring-boot-starter-test")
 }
