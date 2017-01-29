@@ -7,8 +7,6 @@ import net.benrowland.heatmap.client.StreamClient;
 import net.benrowland.heatmap.dto.Activity;
 import net.benrowland.heatmap.dto.Stream;
 import net.benrowland.heatmap.entity.StravaUserEntity;
-import net.benrowland.heatmap.entity.StreamEntity;
-import net.benrowland.heatmap.repository.StreamRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

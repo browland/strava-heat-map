@@ -6,27 +6,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestTemplate;
 
 @Component
 public class ActivityClient {
     private static final Logger logger = LoggerFactory.getLogger(ActivityClient.class);
 
-    private String getActivitiesEndpoint;
-    private RestTemplate restTemplate;
+    private final String getActivitiesEndpoint;
+    private final StravaApi stravaApi;
 
-    ActivityClient(@Autowired final RestTemplate restTemplate,
+    ActivityClient(@Autowired final StravaApi stravaApi,
                    @Value("${strava.api.getActivities.endpoint}") final String getActivitiesEndpoint) {
 
         this.getActivitiesEndpoint = getActivitiesEndpoint;
-        this.restTemplate = restTemplate;
+        this.stravaApi = stravaApi;
     }
 
     public Activity[] getActivities(StravaUserEntity stravaUserEntity) throws StravaApiException {
@@ -34,24 +29,14 @@ public class ActivityClient {
 
         logger.info("Retrieving latest activities for athlete " + stravaUserEntity.getStravaUsername());
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Authorization", "Bearer " + stravaUserEntity.getAccessToken());
-        HttpEntity requestEntity = new HttpEntity<>(headers);
-
         ResponseEntity<Activity[]> response;
         try {
-            response = restTemplate.exchange(getActivitiesEndpoint, HttpMethod.GET, requestEntity, Activity[].class);
+            response = stravaApi.call(stravaUserEntity, getActivitiesEndpoint, Activity[].class);
             logger.info("Successfully retrieved latest activities for athlete " + stravaUserEntity.getStravaUsername());
             return response.getBody();
         }
         catch(RestClientException e) {
-            if(e instanceof HttpStatusCodeException) {
-                HttpStatusCodeException statusCodeException = (HttpStatusCodeException) e;
-                throw new StravaApiException("Unexpected response from activity endpoint " + statusCodeException.getStatusCode());
-            }
-            else {
-                throw new StravaApiException("Error communicating with Strava API when getting activities", e);
-            }
+            throw new StravaApiException("Error communicating with Strava API when getting activities", e);
         }
     }
 
