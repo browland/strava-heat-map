@@ -18,6 +18,8 @@ class StreamParser {
     private static final String STREAM_TYPE = "type";
     private static final String DATA_ATTRIBUTE = "data";
 
+    // We get the response as a Map[] because different fields could be present in the response - a better way could be
+    // a response object which has all the possible fields?
     @SuppressWarnings("unchecked")
     Optional<Stream> parseStream(StravaUserEntity stravaUserEntity, long activityId, Map<String,Object>[] streamsByType) {
         Map<String, Object> latLongStream = null;
