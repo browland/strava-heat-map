@@ -3,10 +3,11 @@ package net.benrowland.heatmap.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import net.benrowland.heatmap.client.ActivityClient;
 import net.benrowland.heatmap.client.StravaApiException;
-import net.benrowland.heatmap.client.StreamClient;
+import net.benrowland.heatmap.client.stream.StravaStream;
+import net.benrowland.heatmap.client.stream.StreamClient;
 import net.benrowland.heatmap.dto.Activity;
-import net.benrowland.heatmap.dto.Stream;
 import net.benrowland.heatmap.entity.StravaUserEntity;
+import net.benrowland.heatmap.entity.StreamEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,18 +27,23 @@ public class RecentActivitiesStreamsService {
     @Autowired
     private StreamClient streamClient;
 
+    @Autowired
+    private StreamConverter streamConverter;
 
-    public List<Stream> streamsForRecentActivities(StravaUserEntity stravaUserEntity) throws StravaApiException, JsonProcessingException {
+    public List<StreamEntity> streamsForRecentActivities(StravaUserEntity stravaUserEntity) throws StravaApiException, JsonProcessingException {
         Activity[] activities = activityClient.getActivities(stravaUserEntity);
 
-        List<Stream> streams = new ArrayList<>(activities.length);
+        List<StreamEntity> streamEntities = new ArrayList<>(activities.length);
         for(Activity activity : activities) {
-            Optional<Stream> optionalStream = streamClient.getStream(stravaUserEntity, activity.getId());
-            optionalStream.ifPresent(streams::add);
+            Optional<StravaStream[]> optionalStravaStreams = streamClient.getStreams(stravaUserEntity, activity.getId());
+
+            optionalStravaStreams.ifPresent(stravaStreams ->
+                    streamConverter.convert(stravaStreams, activity.getId(), stravaUserEntity)
+                            .ifPresent(streamEntities::add));
         }
 
-        logger.info("Successfully processed {} streams for user {}", streams.size(), stravaUserEntity.getStravaUsername());
+        logger.info("Successfully processed {} streams for user {}", streamEntities.size(), stravaUserEntity.getStravaUsername());
 
-        return streams;
+        return streamEntities;
     }
 }

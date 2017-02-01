@@ -2,13 +2,11 @@ package net.benrowland.heatmap.task;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import net.benrowland.heatmap.client.StravaApiException;
-import net.benrowland.heatmap.dto.Stream;
 import net.benrowland.heatmap.entity.StravaUserEntity;
 import net.benrowland.heatmap.entity.StreamEntity;
 import net.benrowland.heatmap.repository.StravaUserRepository;
 import net.benrowland.heatmap.repository.StreamRepository;
 import net.benrowland.heatmap.service.RecentActivitiesStreamsService;
-import net.benrowland.heatmap.service.StreamConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,8 +25,6 @@ public class NewUserTask {
     @Autowired
     private RecentActivitiesStreamsService recentActivitiesStreamsService;
 
-    @Autowired
-    private StreamConverter streamConverter;
 
     @Autowired
     private StreamRepository streamRepository;
@@ -42,14 +38,13 @@ public class NewUserTask {
 
         for(StravaUserEntity stravaUserEntity : stravaUsersToSync) {
             try {
-                List<Stream> streams = recentActivitiesStreamsService.streamsForRecentActivities(stravaUserEntity);
+                List<StreamEntity> streamEntities = recentActivitiesStreamsService.streamsForRecentActivities(stravaUserEntity);
 
-                for (Stream stream : streams) {
-                    StreamEntity streamEntity = streamConverter.convert(stream, stravaUserEntity);
+                for (StreamEntity streamEntity : streamEntities) {
                     streamRepository.save(streamEntity);
                 }
 
-                logger.info("Processed {} streams for user {}", streams.size(), stravaUserEntity);
+                logger.info("Processed {} streams for user {}", streamEntities.size(), stravaUserEntity);
             }
             catch(StravaApiException e) {
                 logger.error("Could not sync user " + stravaUserEntity.getStravaUsername(), e);

@@ -1,10 +1,10 @@
-package net.benrowland.heatmap.dto;
+package net.benrowland.heatmap.service;
 
 public class LatLng {
     private Double lat;
     private Double lng;
 
-    LatLng(Double lat, Double lng) {
+    public LatLng(Double lat, Double lng) {
         this.lat = lat;
         this.lng = lng;
     }

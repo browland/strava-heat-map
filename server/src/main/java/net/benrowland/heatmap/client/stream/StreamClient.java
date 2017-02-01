@@ -1,17 +1,18 @@
-package net.benrowland.heatmap.client;
+package net.benrowland.heatmap.client.stream;
 
-import net.benrowland.heatmap.dto.Stream;
+import net.benrowland.heatmap.client.StravaApi;
+import net.benrowland.heatmap.client.StravaApiException;
 import net.benrowland.heatmap.entity.StravaUserEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestClientException;
 
-import java.util.Map;
 import java.util.Optional;
 
 @Component
@@ -19,30 +20,27 @@ public class StreamClient {
     private static final Logger logger = LoggerFactory.getLogger(StreamClient.class);
 
     private final String getStreamsEndpoint;
-    private final StreamParser streamParser;
     private final StravaApi stravaApi;
 
     StreamClient(@Value("${strava.api.getStreams.endpoint}") final String getStreamsEndpoint,
-                 @Autowired final StravaApi stravaApi,
-                 @Autowired final StreamParser streamParser) {
+                 @Autowired final StravaApi stravaApi) {
 
         this.getStreamsEndpoint = getStreamsEndpoint;
         this.stravaApi = stravaApi;
-        this.streamParser = streamParser;
     }
 
     @SuppressWarnings("unchecked")
-    public Optional<Stream> getStream(StravaUserEntity stravaUserEntity, long activityId) throws StravaApiException {
-        logger.info("Retrieving stream for activity id {} for strava user {}", activityId, stravaUserEntity.getStravaUsername());
+    public Optional<StravaStream[]> getStreams(StravaUserEntity stravaUserEntity, long activityId) throws StravaApiException {
+        logger.info("Retrieving streams for activity id {} for strava user {}", activityId, stravaUserEntity.getStravaUsername());
 
         String endpoint = String.format(getStreamsEndpoint, activityId);
         try {
-            ResponseEntity<Map[]> response = stravaApi.call(stravaUserEntity, endpoint, Map[].class);
+            ResponseEntity<StravaStream[]> response = stravaApi.call(stravaUserEntity, endpoint, StravaStream[].class);
 
-            logger.info("Successfully retrieved stream for activity {}, strava user {}",
+            logger.info("Successfully retrieved streams for activity {}, strava user {}",
                 activityId, stravaUserEntity.getStravaUsername());
 
-            return streamParser.parseStream(stravaUserEntity, activityId, response.getBody());
+            return Optional.of(response.getBody());
         }
         catch(RestClientException e) {
             if(e instanceof HttpStatusCodeException) {
