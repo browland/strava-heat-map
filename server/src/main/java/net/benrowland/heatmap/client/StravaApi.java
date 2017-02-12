@@ -31,7 +31,7 @@ public class StravaApi {
             return restTemplate.exchange(endpoint, HttpMethod.GET, requestEntity, responseType);
         }
         catch(RestClientException e) {
-            detectRateLimitingElseRethrow(stravaUserEntity, e);
+            detectRateLimitingElseRethrow(stravaUserEntity, endpoint, e);
             return null;  // only for the compiler - better way to do this?
         }
     }
@@ -40,13 +40,13 @@ public class StravaApi {
      * We detect cases where we're being rate-limited by the Strava API, and re-throw these as we don't want to try to
      * handle this.
      */
-    private void detectRateLimitingElseRethrow(StravaUserEntity stravaUserEntity, RestClientException e)
+    private void detectRateLimitingElseRethrow(StravaUserEntity stravaUserEntity, String endpoint, RestClientException e)
         throws StravaApiException {
 
         if(e instanceof HttpStatusCodeException) {
             HttpStatusCodeException httpStatusCodeException = (HttpStatusCodeException)e;
             HttpStatus statusCode = httpStatusCodeException.getStatusCode();
-            logger.error("Unexpected response from activity endpoint " + httpStatusCodeException.getStatusCode());
+            logger.error("Unexpected response {} when calling {}", httpStatusCodeException.getStatusCode(), endpoint);
 
             if(HttpStatus.FORBIDDEN.equals(statusCode)) {
                 String message = String.format("Got 403 Forbidden from Strava API for strava user %s - possible rate-limiting",
@@ -55,10 +55,9 @@ public class StravaApi {
                 throw new StravaApiException(message);
             }
         }
-        else {
-            // We may still be able to handle the non-success case higher up
-            throw e;
-        }
+
+        // We may still be able to handle the non-success case higher up
+        throw e;
     }
 
     private HttpEntity setUpAuthentication(StravaUserEntity stravaUserEntity) {
