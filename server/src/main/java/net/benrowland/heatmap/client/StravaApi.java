@@ -11,7 +11,7 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 @Component
-class StravaApi {
+public class StravaApi {
 
     private static final Logger logger = LoggerFactory.getLogger(StravaApi.class);
 
@@ -21,7 +21,7 @@ class StravaApi {
         this.restTemplate = restTemplate;
     }
 
-    <T> ResponseEntity<T> call(final StravaUserEntity stravaUserEntity, final String endpoint, final Class<T> responseType)
+    public <T> ResponseEntity<T> call(final StravaUserEntity stravaUserEntity, final String endpoint, final Class<T> responseType)
         throws StravaApiException {
 
         verifyStravaUser(stravaUserEntity);
