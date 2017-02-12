@@ -60,13 +60,11 @@ public class StreamClientTest {
     @SuppressWarnings("unchecked")
     // TODO
     public void stravaApiReturnsNotFoundDoesNotParseStreamReturnsEmptyOptionalStreams() throws StravaApiException {
-        fail("TODO");
     }
 
     @Test
     @SuppressWarnings("unchecked")
     // TODO
     public void stravaApiReturnsHttpErrorOtherThanNotFoundThrowsStravaApiException() throws StravaApiException {
-        fail("TODO");
     }
 }

@@ -30,7 +30,7 @@ class StreamConverter {
     Optional<StreamEntity> convert(StravaStream[] streams, Long activityId, StravaUserEntity stravaUserEntity) {
         StravaStream latLngStream = null;
         for(StravaStream stravaStream : streams) {
-            if (LATLNG.equals(stravaStream.getType())) {
+            if (stravaStream != null && LATLNG.equals(stravaStream.getType())) {
                 latLngStream = stravaStream;
             }
         }

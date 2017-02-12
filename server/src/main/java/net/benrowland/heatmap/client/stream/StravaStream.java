@@ -1,11 +1,13 @@
 package net.benrowland.heatmap.client.stream;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.common.base.Objects;
 
 import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
+@JsonDeserialize(using = StreamDeserializer.class)
 public class StravaStream {
     private String type;
     private List<List<Double>> data;

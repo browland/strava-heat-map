@@ -16,12 +16,12 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class StreamDeserializationTest {
     private static final String LATLNG_STREAM_TYPE = "latlng";
+    private static final String DISTANCE_STREAM_TYPE = "distance";
 
     private JacksonTester<StravaStream[]> jacksonTester;
 
@@ -32,24 +32,56 @@ public class StreamDeserializationTest {
     }
 
     @Test
-    public void testStreamDeserializes() throws IOException {
-        final ClassPathResource cpr = new ClassPathResource("net/benrowland/heatmap/dto/stream.json");
+    public void testLatLngStreamDeserializes() throws IOException {
+        final ClassPathResource cpr = new ClassPathResource("net/benrowland/heatmap/dto/stream-latlng.json");
         final String streamJson = IOUtils.toString(cpr.getInputStream());
 
-        final StravaStream[] expectedStreamArray = new StravaStream[1];
         StravaStream stream = new StravaStream();
         stream.setType(LATLNG_STREAM_TYPE);
+
         List<List<Double>> streamData = new ArrayList<>();
         streamData.add(Arrays.asList(0d, 1d));
         streamData.add(Arrays.asList(-2d, 3d));
         stream.setData(streamData);
+
+        final StravaStream[] expectedStreamArray = new StravaStream[1];
         expectedStreamArray[0] = stream;
 
         assertThat(jacksonTester.parse(streamJson)).isEqualTo(expectedStreamArray);
     }
 
     @Test
-    public void test() {
-        fail("Add more tests");
+    public void testDistanceStreamDeserializes() throws IOException {
+        final ClassPathResource cpr = new ClassPathResource("net/benrowland/heatmap/dto/stream-distance.json");
+        final String streamJson = IOUtils.toString(cpr.getInputStream());
+
+        StravaStream stream = new StravaStream();
+        stream.setType(DISTANCE_STREAM_TYPE);
+
+        final StravaStream[] expectedStreamArray = new StravaStream[1];
+        expectedStreamArray[0] = null;
+
+        assertThat(jacksonTester.parse(streamJson)).isEqualTo(expectedStreamArray);
     }
+
+    @Test
+    public void testMixedStreamTypesDeserialize() throws IOException {
+        final ClassPathResource cpr = new ClassPathResource("net/benrowland/heatmap/dto/stream-mixed.json");
+        final String streamJson = IOUtils.toString(cpr.getInputStream());
+
+        StravaStream stream = new StravaStream();
+        stream.setType(LATLNG_STREAM_TYPE);
+
+        List<List<Double>> streamData = new ArrayList<>();
+        streamData.add(Arrays.asList(0d, 1d));
+        streamData.add(Arrays.asList(-2d, 3d));
+        stream.setData(streamData);
+
+        final StravaStream[] expectedStreamArray = new StravaStream[2];
+        expectedStreamArray[0] = stream;
+        expectedStreamArray[1] = null;
+
+        assertThat(jacksonTester.parse(streamJson)).isEqualTo(expectedStreamArray);
+    }
+
 }
