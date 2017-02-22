@@ -21,7 +21,6 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class StreamClientTest {
     private static final String STREAMS_ENDPOINT = "activity=%s";
-    private static final String ACCESS_TOKEN = "access_token";
     private static final Long ACTIVITY_ID = 1L;
 
     @Mock

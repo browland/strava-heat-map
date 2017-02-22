@@ -12,42 +12,49 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 @Component
 public class OAuthClient {
     private static final Logger logger = LoggerFactory.getLogger(OAuthClient.class);
 
-    @Autowired
     private RestTemplate restTemplate;
-
-    @Value("${strava.oauth.completionUri}")
     private String completionUri;
-
-    @Value("${strava.client.clientSecret}")
     private String clientSecret;
-
-    @Value("${strava.client.clientId}")
     private String clientId;
+
+    public OAuthClient(@Autowired RestTemplate restTemplate,
+                       @Value("${strava.oauth.completionUri}") String completionUri,
+                       @Value("${strava.client.clientSecret}") String clientSecret,
+                       @Value("${strava.client.clientId}") String clientId) {
+        this.restTemplate = restTemplate;
+        this.completionUri = completionUri;
+        this.clientSecret = clientSecret;
+        this.clientId = clientId;
+    }
 
     public OAuthCompletionResponse authorise(final String authorisationCode) throws StravaApiException {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-        map.add("client_id", clientId);
-        map.add("client_secret", clientSecret);
-        map.add("code", authorisationCode);
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("client_id", clientId);
+        params.add("client_secret", clientSecret);
+        params.add("code", authorisationCode);
 
-        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
-        ResponseEntity<OAuthCompletionResponse> response = restTemplate.postForEntity(completionUri, request, OAuthCompletionResponse.class);
+        HttpEntity<MultiValueMap<String, String>> requestParamsAndHeaders = new HttpEntity<>(params, headers);
 
-        if(response.getStatusCode().is2xxSuccessful()) {
+        try {
+            ResponseEntity<OAuthCompletionResponse> responseEntity =
+                restTemplate.postForEntity(completionUri, requestParamsAndHeaders, OAuthCompletionResponse.class);
+
             logger.info("Successfully called OAuth completion endpoint");
-            return response.getBody();
+            return responseEntity.getBody();
         }
-        else {
-            throw new StravaApiException("Unexpected response from OAuth completion endpoint " + response.getStatusCode());
+        catch(RestClientException e) {
+            logger.error("Unexpected response from OAuth completion endpoint", e);
+            throw new StravaApiException("Unexpected response from OAuth completion endpoint", e);
         }
     }
 }

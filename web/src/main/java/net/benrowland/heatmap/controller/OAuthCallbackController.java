@@ -23,10 +23,11 @@ public class OAuthCallbackController {
     private OAuthService oAuthService;
 
     @RequestMapping(path = "/token_exchange", method = RequestMethod.GET)
-    public void tokenExchange(@RequestParam String state,
+    public void tokenExchange(@RequestParam("state") String state,
                               @RequestParam("code") String authorisationCode,
                               HttpSession httpSession,
                               HttpServletResponse httpServletResponse) throws StravaApiException, IOException {
+
         logger.info("Received OAuth callback state (user name) {}, authorisation code {}", state, authorisationCode);
 
         StravaUserEntity stravaUserEntity = oAuthService.authorise(state, authorisationCode);
