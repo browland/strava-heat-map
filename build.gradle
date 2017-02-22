@@ -42,6 +42,7 @@ subprojects {
         compile("org.mockito:mockito-all:1.10.19")
 
         testCompile("org.springframework.boot:spring-boot-starter-test")
+        testCompile("com.github.tomakehurst:wiremock-standalone:2.5.1")
     }
 
     // Issue #9 - we have to copy all Gradle JVM args to the forked test process so we can set the
