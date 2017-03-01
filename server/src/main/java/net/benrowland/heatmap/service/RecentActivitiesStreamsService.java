@@ -35,11 +35,14 @@ public class RecentActivitiesStreamsService {
 
         List<StreamEntity> streamEntities = new ArrayList<>(activities.length);
         for(Activity activity : activities) {
-            Optional<StravaStream[]> optionalStravaStreams = streamClient.getStreams(stravaUserEntity, activity.getId());
+            if(activity.isManual()) {
+                logger.info("Not requesting stream for activity {}, strava user {} as this is a manual upload", activity.getId(), stravaUserEntity.getStravaUsername());
+                continue;
+            }
 
-            optionalStravaStreams.ifPresent(stravaStreams ->
-                    streamConverter.convert(stravaStreams, activity.getId(), stravaUserEntity)
-                            .ifPresent(streamEntities::add));
+            StravaStream[] stravaStreams = streamClient.getStreams(stravaUserEntity, activity.getId());
+            streamConverter.convert(stravaStreams, activity.getId(), stravaUserEntity)
+                .ifPresent(streamEntities::add);
         }
 
         logger.info("Successfully processed {} streams for user {}", streamEntities.size(), stravaUserEntity.getStravaUsername());

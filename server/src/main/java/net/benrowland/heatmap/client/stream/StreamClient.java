@@ -7,10 +7,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestClientException;
 
 import java.util.Optional;
@@ -30,7 +28,7 @@ public class StreamClient {
     }
 
     @SuppressWarnings("unchecked")
-    public Optional<StravaStream[]> getStreams(StravaUserEntity stravaUserEntity, long activityId) throws StravaApiException {
+    public StravaStream[] getStreams(StravaUserEntity stravaUserEntity, long activityId) throws StravaApiException {
         logger.info("Retrieving streams for activity id {} for strava user {}", activityId, stravaUserEntity.getStravaUsername());
 
         String endpoint = String.format(getStreamsEndpoint, activityId);
@@ -40,19 +38,9 @@ public class StreamClient {
             logger.info("Successfully retrieved streams for activity {}, strava user {}",
                 activityId, stravaUserEntity.getStravaUsername());
 
-            return Optional.of(response.getBody());
+            return response.getBody();
         }
         catch(RestClientException e) {
-            if(e instanceof HttpStatusCodeException) {
-                HttpStatusCodeException httpStatusCodeException = (HttpStatusCodeException)e;
-                HttpStatus statusCode = httpStatusCodeException.getStatusCode();
-
-                if (HttpStatus.NOT_FOUND.value() == statusCode.value()) {
-                    logger.warn("Ignoring stream for activity id {} as it is probably a manual upload", activityId);
-                    return Optional.empty();
-                }
-            }
-
             throw new StravaApiException(String.format("When getting stream for activity %d", activityId), e);
         }
     }

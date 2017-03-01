@@ -33,7 +33,7 @@ public class StreamDeserializationTest {
 
     @Test
     public void testLatLngStreamDeserializes() throws IOException {
-        final ClassPathResource cpr = new ClassPathResource("net/benrowland/heatmap/dto/stream-latlng.json");
+        final ClassPathResource cpr = new ClassPathResource("net/benrowland/heatmap/client/stream/stream-latlng.json");
         final String streamJson = IOUtils.toString(cpr.getInputStream());
 
         StravaStream stream = new StravaStream();
@@ -52,7 +52,7 @@ public class StreamDeserializationTest {
 
     @Test
     public void testDistanceStreamDeserializes() throws IOException {
-        final ClassPathResource cpr = new ClassPathResource("net/benrowland/heatmap/dto/stream-distance.json");
+        final ClassPathResource cpr = new ClassPathResource("net/benrowland/heatmap/client/stream/stream-distance.json");
         final String streamJson = IOUtils.toString(cpr.getInputStream());
 
         StravaStream stream = new StravaStream();
@@ -66,7 +66,7 @@ public class StreamDeserializationTest {
 
     @Test
     public void testMixedStreamTypesDeserialize() throws IOException {
-        final ClassPathResource cpr = new ClassPathResource("net/benrowland/heatmap/dto/stream-mixed.json");
+        final ClassPathResource cpr = new ClassPathResource("net/benrowland/heatmap/client/stream/stream-mixed.json");
         final String streamJson = IOUtils.toString(cpr.getInputStream());
 
         StravaStream stream = new StravaStream();

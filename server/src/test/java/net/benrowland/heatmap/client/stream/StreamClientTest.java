@@ -35,7 +35,7 @@ public class StreamClientTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void callsStravaApiThenParsesStreamThenReturnsOptionalStreams() throws StravaApiException {
+    public void callsStravaApiThenParsesStreamThenReturnsStreams() throws StravaApiException {
         final String ENDPOINT_WITH_ACTIVITY_ID = String.format(STREAMS_ENDPOINT, ACTIVITY_ID);
 
         StravaStream stravaStream = new StravaStream();
@@ -50,9 +50,9 @@ public class StreamClientTest {
             .thenReturn(responseEntity);
         when(responseEntity.getBody()).thenReturn(response);
 
-        Optional<StravaStream[]> streams = streamClient.getStreams(stravaUserEntity, ACTIVITY_ID);
+        StravaStream[] streams = streamClient.getStreams(stravaUserEntity, ACTIVITY_ID);
 
-        assertThat(streams.get()).isEqualTo(expectedStreams);
+        assertThat(streams).isEqualTo(expectedStreams);
     }
 
     @Test
