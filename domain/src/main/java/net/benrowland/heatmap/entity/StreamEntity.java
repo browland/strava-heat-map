@@ -8,11 +8,11 @@ import javax.persistence.Lob;
 @Entity(name = "stream")
 public class StreamEntity {
     @Id
-    @Column(nullable = false, name = "id")
+    @Column(nullable = false, name = "activity_id")
     private Long activityId;
 
     @Lob
-    @Column(nullable = false, name = "latLngData", length = 10000)
+    @Column(nullable = false, name = "lat_lng_data", length = 10000)
     private String latLngStream;
 
     @Column(nullable = false, name = "strava_username")

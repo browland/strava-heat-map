@@ -18,6 +18,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
@@ -49,7 +50,7 @@ public class RecentActivitiesStreamsServiceIntegrationTest {
         final StravaUserEntity stravaUserEntity = new StravaUserEntity();
         stravaUserEntity.setAccessToken(ACCESS_TOKEN);
 
-        assertThat(recentActivitiesStreamsService.streamsForRecentActivities(stravaUserEntity)).isEmpty();
+        assertThat(recentActivitiesStreamsService.streamsForRecentActivitiesAndUpdateLastActivityDate(stravaUserEntity)).isEmpty();
     }
 
     @Test
@@ -59,7 +60,7 @@ public class RecentActivitiesStreamsServiceIntegrationTest {
         final StravaUserEntity stravaUserEntity = new StravaUserEntity();
         stravaUserEntity.setAccessToken(ACCESS_TOKEN);
 
-        assertThat(recentActivitiesStreamsService.streamsForRecentActivities(stravaUserEntity)).isEmpty();
+        assertThat(recentActivitiesStreamsService.streamsForRecentActivitiesAndUpdateLastActivityDate(stravaUserEntity)).isEmpty();
     }
 
     @Test
@@ -76,8 +77,10 @@ public class RecentActivitiesStreamsServiceIntegrationTest {
         expectedStreamEntity.setLatLngStream("[{\"lat\":0.0,\"lng\":1.0},{\"lat\":-2.0,\"lng\":3.0}]");
 
         List<StreamEntity> expectedStreams = Lists.newArrayList(expectedStreamEntity);
+        LocalDateTime expectedLastActivityDateTime = LocalDateTime.of(2013, 8, 23, 17, 4, 12);
 
-        assertThat(recentActivitiesStreamsService.streamsForRecentActivities(stravaUserEntity)).isEqualTo(expectedStreams);
+        assertThat(recentActivitiesStreamsService.streamsForRecentActivitiesAndUpdateLastActivityDate(stravaUserEntity)).isEqualTo(expectedStreams);
+        assertThat(stravaUserEntity.getLastActivityDatetime()).isEqualTo(expectedLastActivityDateTime);
     }
 
     private void stubStravaActivitiesApiReturnsEmptyActivities() {

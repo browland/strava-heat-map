@@ -13,9 +13,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class RecentActivitiesStreamsService {
@@ -30,10 +30,12 @@ public class RecentActivitiesStreamsService {
     @Autowired
     private StreamConverter streamConverter;
 
-    public List<StreamEntity> streamsForRecentActivities(StravaUserEntity stravaUserEntity) throws StravaApiException, JsonProcessingException {
+    public List<StreamEntity> streamsForRecentActivitiesAndUpdateLastActivityDate(StravaUserEntity stravaUserEntity) throws StravaApiException, JsonProcessingException {
         Activity[] activities = activityClient.getActivities(stravaUserEntity);
 
         List<StreamEntity> streamEntities = new ArrayList<>(activities.length);
+
+        LocalDateTime latestActivityDate = null;
         for(Activity activity : activities) {
             if(activity.isManual()) {
                 logger.info("Not requesting stream for activity {}, strava user {} as this is a manual upload", activity.getId(), stravaUserEntity.getStravaUsername());
@@ -43,6 +45,15 @@ public class RecentActivitiesStreamsService {
             StravaStream[] stravaStreams = streamClient.getStreams(stravaUserEntity, activity.getId());
             streamConverter.convert(stravaStreams, activity.getId(), stravaUserEntity)
                 .ifPresent(streamEntities::add);
+
+            LocalDateTime activityDateTime = activity.getStartDateLocal();
+            if(latestActivityDate == null || latestActivityDate.isBefore(activityDateTime)) {
+                latestActivityDate = activityDateTime;
+            }
+        }
+
+        if(latestActivityDate != null) {
+            stravaUserEntity.setLastActivityDatetime(latestActivityDate);
         }
 
         logger.info("Successfully processed {} streams for user {}", streamEntities.size(), stravaUserEntity.getStravaUsername());

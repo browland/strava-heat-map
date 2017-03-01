@@ -3,6 +3,7 @@ package net.benrowland.heatmap.entity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import java.time.LocalDateTime;
 
 @Entity(name = "strava_user")
 public class StravaUserEntity {
@@ -18,6 +19,9 @@ public class StravaUserEntity {
 
     @Column(nullable = false, name = "sync_required")
     private boolean syncRequired;
+
+    @Column(nullable = true, name = "last_activity_datetime")
+    private LocalDateTime lastActivityDatetime;
 
     public String getUsername() {
         return username;
@@ -51,6 +55,14 @@ public class StravaUserEntity {
         this.syncRequired = syncRequired;
     }
 
+    public LocalDateTime getLastActivityDatetime() {
+        return lastActivityDatetime;
+    }
+
+    public void setLastActivityDatetime(LocalDateTime lastActivityDatetime) {
+        this.lastActivityDatetime = lastActivityDatetime;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -61,7 +73,8 @@ public class StravaUserEntity {
         if (syncRequired != that.syncRequired) return false;
         if (!username.equals(that.username)) return false;
         if (!stravaUsername.equals(that.stravaUsername)) return false;
-        return accessToken.equals(that.accessToken);
+        if (!accessToken.equals(that.accessToken)) return false;
+        return lastActivityDatetime != null ? lastActivityDatetime.equals(that.lastActivityDatetime) : that.lastActivityDatetime == null;
     }
 
     @Override
@@ -70,6 +83,7 @@ public class StravaUserEntity {
         result = 31 * result + stravaUsername.hashCode();
         result = 31 * result + accessToken.hashCode();
         result = 31 * result + (syncRequired ? 1 : 0);
+        result = 31 * result + (lastActivityDatetime != null ? lastActivityDatetime.hashCode() : 0);
         return result;
     }
 
@@ -80,6 +94,7 @@ public class StravaUserEntity {
                 ", stravaUsername='" + stravaUsername + '\'' +
                 ", accessToken='" + accessToken + '\'' +
                 ", syncRequired=" + syncRequired +
+                ", lastActivityDatetime=" + lastActivityDatetime +
                 '}';
     }
 }

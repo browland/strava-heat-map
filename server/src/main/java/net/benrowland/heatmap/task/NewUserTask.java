@@ -38,7 +38,7 @@ public class NewUserTask {
 
         for(StravaUserEntity stravaUserEntity : stravaUsersToSync) {
             try {
-                List<StreamEntity> streamEntities = recentActivitiesStreamsService.streamsForRecentActivities(stravaUserEntity);
+                List<StreamEntity> streamEntities = recentActivitiesStreamsService.streamsForRecentActivitiesAndUpdateLastActivityDate(stravaUserEntity);
 
                 for (StreamEntity streamEntity : streamEntities) {
                     streamRepository.save(streamEntity);
