@@ -11,6 +11,8 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 
+import java.time.LocalDateTime;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Matchers.eq;
@@ -45,7 +47,28 @@ public class ActivityClientTest {
         when(stravaApi.call(eq(stravaUserEntity), eq(ACTIVITIES_URL), eq(Activity[].class)))
             .thenReturn(responseEntity);
 
-        Activity[] activitiesResponse = activityClient.getActivities(stravaUserEntity);
+        Activity[] activitiesResponse = activityClient.getActivities(stravaUserEntity, null);
+
+        assertThat(activitiesResponse).hasSize(3);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void callsStravaApiWithAfterDateAndReturnsActivities() throws StravaApiException {
+        final StravaUserEntity stravaUserEntity = new StravaUserEntity();
+        stravaUserEntity.setAccessToken(ACCESS_TOKEN);
+
+        final ResponseEntity<Activity[]> responseEntity = Mockito.mock(ResponseEntity.class);
+
+        LocalDateTime afterDate = LocalDateTime.of(2017, 3, 3, 18, 11, 0);
+        long afterDateSecsSinceEpoch = 1488564660L;
+        final String urlWithAfterDate = ACTIVITIES_URL + "&after=" + afterDateSecsSinceEpoch;
+
+        when(responseEntity.getBody()).thenReturn(getActivities());
+        when(stravaApi.call(eq(stravaUserEntity), eq(urlWithAfterDate), eq(Activity[].class)))
+                .thenReturn(responseEntity);
+
+        Activity[] activitiesResponse = activityClient.getActivities(stravaUserEntity, afterDate);
 
         assertThat(activitiesResponse).hasSize(3);
     }
@@ -62,7 +85,7 @@ public class ActivityClientTest {
         when(stravaApi.call(eq(stravaUserEntity), eq(ACTIVITIES_URL), eq(Activity[].class)))
                 .thenReturn(responseEntity);
 
-        Activity[] activitiesResponse = activityClient.getActivities(stravaUserEntity);
+        Activity[] activitiesResponse = activityClient.getActivities(stravaUserEntity, null);
 
         assertThat(activitiesResponse).hasSize(0);
     }
@@ -79,7 +102,7 @@ public class ActivityClientTest {
         when(stravaApi.call(eq(stravaUserEntity), eq(ACTIVITIES_URL), eq(Activity[].class)))
             .thenThrow(HttpClientErrorException.class);
 
-        assertThatThrownBy(() -> activityClient.getActivities(stravaUserEntity))
+        assertThatThrownBy(() -> activityClient.getActivities(stravaUserEntity, null))
             .isInstanceOf(StravaApiException.class);
     }
 

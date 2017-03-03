@@ -30,8 +30,16 @@ public class RecentActivitiesStreamsService {
     @Autowired
     private StreamConverter streamConverter;
 
-    public List<StreamEntity> streamsForRecentActivitiesAndUpdateLastActivityDate(StravaUserEntity stravaUserEntity) throws StravaApiException, JsonProcessingException {
-        Activity[] activities = activityClient.getActivities(stravaUserEntity);
+    public List<StreamEntity> streamsForRecentActivitiesAndUpdateLastActivityDate(StravaUserEntity stravaUserEntity)
+            throws StravaApiException, JsonProcessingException {
+
+        return streamsForRecentActivitiesAndUpdateLastActivityDate(stravaUserEntity, null);
+    }
+
+    public List<StreamEntity> streamsForRecentActivitiesAndUpdateLastActivityDate(StravaUserEntity stravaUserEntity, LocalDateTime afterDate)
+            throws StravaApiException, JsonProcessingException {
+
+        Activity[] activities = activityClient.getActivities(stravaUserEntity, afterDate);
 
         List<StreamEntity> streamEntities = new ArrayList<>(activities.length);
 

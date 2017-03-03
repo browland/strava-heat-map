@@ -19,6 +19,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
@@ -65,7 +66,7 @@ public class RecentActivitiesStreamsServiceIntegrationTest {
 
     @Test
     public void stravaApiReturnsActivityRequestsStreamReturnsStream() throws StravaApiException, IOException {
-        stubStravaActivitiesApiReturnsActivityAndStream();
+        stubStravaActivitiesApiReturnsActivityAndStream(null);
 
         final StravaUserEntity stravaUserEntity = new StravaUserEntity();
         stravaUserEntity.setStravaUsername(STRAVA_USERNAME);
@@ -80,6 +81,27 @@ public class RecentActivitiesStreamsServiceIntegrationTest {
         LocalDateTime expectedLastActivityDateTime = LocalDateTime.of(2013, 8, 23, 17, 4, 12);
 
         assertThat(recentActivitiesStreamsService.streamsForRecentActivitiesAndUpdateLastActivityDate(stravaUserEntity)).isEqualTo(expectedStreams);
+        assertThat(stravaUserEntity.getLastActivityDatetime()).isEqualTo(expectedLastActivityDateTime);
+    }
+
+    @Test
+    public void stravaApiReturnsActivityRequestsAfterDateAndReturnsStream() throws StravaApiException, IOException {
+        LocalDateTime activitiesAfterDate = LocalDateTime.of(2017, 3, 2, 18, 30, 0);
+        stubStravaActivitiesApiReturnsActivityAndStream(activitiesAfterDate);
+
+        final StravaUserEntity stravaUserEntity = new StravaUserEntity();
+        stravaUserEntity.setStravaUsername(STRAVA_USERNAME);
+        stravaUserEntity.setAccessToken(ACCESS_TOKEN);
+
+        StreamEntity expectedStreamEntity = new StreamEntity();
+        expectedStreamEntity.setStravaUsername(STRAVA_USERNAME);
+        expectedStreamEntity.setActivityId(8529483L);
+        expectedStreamEntity.setLatLngStream("[{\"lat\":0.0,\"lng\":1.0},{\"lat\":-2.0,\"lng\":3.0}]");
+
+        List<StreamEntity> expectedStreams = Lists.newArrayList(expectedStreamEntity);
+        LocalDateTime expectedLastActivityDateTime = LocalDateTime.of(2013, 8, 23, 17, 4, 12);
+
+        assertThat(recentActivitiesStreamsService.streamsForRecentActivitiesAndUpdateLastActivityDate(stravaUserEntity, activitiesAfterDate)).isEqualTo(expectedStreams);
         assertThat(stravaUserEntity.getLastActivityDatetime()).isEqualTo(expectedLastActivityDateTime);
     }
 
@@ -102,11 +124,18 @@ public class RecentActivitiesStreamsServiceIntegrationTest {
                 .withBody(activityJson)));
     }
 
-    private void stubStravaActivitiesApiReturnsActivityAndStream() throws IOException {
+    private void stubStravaActivitiesApiReturnsActivityAndStream(LocalDateTime activitiesAfterDate) throws IOException {
         final ClassPathResource activityCpr = new ClassPathResource("net/benrowland/heatmap/service/activity-non-manual.json");
         final String activityJson = IOUtils.toString(activityCpr.getInputStream());
 
-        stubFor(get(urlEqualTo("/activities?per_page=100"))
+        String activitiesUrl = "/activities?per_page=100";
+        if(activitiesAfterDate != null) {
+            ZoneId europeLondon = ZoneId.of("Europe/London");
+            long afterEpochSecs = activitiesAfterDate.atZone(europeLondon).toEpochSecond();
+            activitiesUrl += "&after=" + Long.toString(afterEpochSecs);
+        }
+
+        stubFor(get(urlEqualTo(activitiesUrl))
             .willReturn(aResponse()
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", APPLICATION_JSON_VALUE)
