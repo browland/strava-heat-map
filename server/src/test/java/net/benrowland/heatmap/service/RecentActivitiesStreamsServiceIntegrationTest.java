@@ -84,7 +84,7 @@ public class RecentActivitiesStreamsServiceIntegrationTest {
     }
 
     private void stubStravaActivitiesApiReturnsEmptyActivities() {
-        stubFor(get(urlEqualTo("/activities"))
+        stubFor(get(urlEqualTo("/activities?per_page=100"))
             .willReturn(aResponse()
             .withStatus(HttpStatus.OK.value())
             .withHeader("Content-Type", APPLICATION_JSON_VALUE)
@@ -95,7 +95,7 @@ public class RecentActivitiesStreamsServiceIntegrationTest {
         final ClassPathResource cpr = new ClassPathResource("net/benrowland/heatmap/service/activity-manual.json");
         final String activityJson = IOUtils.toString(cpr.getInputStream());
 
-        stubFor(get(urlEqualTo("/activities"))
+        stubFor(get(urlEqualTo("/activities?per_page=100"))
             .willReturn(aResponse()
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", APPLICATION_JSON_VALUE)
@@ -106,7 +106,7 @@ public class RecentActivitiesStreamsServiceIntegrationTest {
         final ClassPathResource activityCpr = new ClassPathResource("net/benrowland/heatmap/service/activity-non-manual.json");
         final String activityJson = IOUtils.toString(activityCpr.getInputStream());
 
-        stubFor(get(urlEqualTo("/activities"))
+        stubFor(get(urlEqualTo("/activities?per_page=100"))
             .willReturn(aResponse()
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", APPLICATION_JSON_VALUE)

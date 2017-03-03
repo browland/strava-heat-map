@@ -18,7 +18,9 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ActivityClientTest {
-    private static final String ACTIVITIES_ENDPOINT = "url";
+    private static final String ACTIVITIES_ENDPOINT = "http://strava/activities";
+    private static final int PAGE_SIZE = 1;
+    private static final String ACTIVITIES_URL = ACTIVITIES_ENDPOINT + "?per_page=" + PAGE_SIZE;
     private static final String ACCESS_TOKEN = "access_token";
 
     @Mock
@@ -28,7 +30,7 @@ public class ActivityClientTest {
 
     @Before
     public void setUp() {
-        activityClient = new ActivityClient(stravaApi, ACTIVITIES_ENDPOINT);
+        activityClient = new ActivityClient(stravaApi, ACTIVITIES_ENDPOINT, PAGE_SIZE);
     }
 
     @Test
@@ -40,7 +42,7 @@ public class ActivityClientTest {
         final ResponseEntity<Activity[]> responseEntity = Mockito.mock(ResponseEntity.class);
 
         when(responseEntity.getBody()).thenReturn(getActivities());
-        when(stravaApi.call(eq(stravaUserEntity), eq(ACTIVITIES_ENDPOINT), eq(Activity[].class)))
+        when(stravaApi.call(eq(stravaUserEntity), eq(ACTIVITIES_URL), eq(Activity[].class)))
             .thenReturn(responseEntity);
 
         Activity[] activitiesResponse = activityClient.getActivities(stravaUserEntity);
@@ -57,7 +59,7 @@ public class ActivityClientTest {
         final ResponseEntity<Activity[]> responseEntity = Mockito.mock(ResponseEntity.class);
 
         when(responseEntity.getBody()).thenReturn(new Activity[] {});
-        when(stravaApi.call(eq(stravaUserEntity), eq(ACTIVITIES_ENDPOINT), eq(Activity[].class)))
+        when(stravaApi.call(eq(stravaUserEntity), eq(ACTIVITIES_URL), eq(Activity[].class)))
                 .thenReturn(responseEntity);
 
         Activity[] activitiesResponse = activityClient.getActivities(stravaUserEntity);
@@ -74,7 +76,7 @@ public class ActivityClientTest {
         final ResponseEntity<Activity[]> responseEntity = Mockito.mock(ResponseEntity.class);
 
         when(responseEntity.getBody()).thenReturn(getActivities());
-        when(stravaApi.call(eq(stravaUserEntity), eq(ACTIVITIES_ENDPOINT), eq(Activity[].class)))
+        when(stravaApi.call(eq(stravaUserEntity), eq(ACTIVITIES_URL), eq(Activity[].class)))
             .thenThrow(HttpClientErrorException.class);
 
         assertThatThrownBy(() -> activityClient.getActivities(stravaUserEntity))
