@@ -1,8 +1,7 @@
 package net.benrowland.heatmap.controller;
 
-import net.benrowland.heatmap.entity.StravaUserEntity;
-import net.benrowland.heatmap.repository.StravaUserRepository;
 import net.benrowland.heatmap.security.ForbiddenException;
+import net.benrowland.heatmap.service.SyncService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +18,7 @@ public class SyncController {
     private static final Logger log = LoggerFactory.getLogger(SyncController.class);
 
     @Autowired
-    private StravaUserRepository stravaUserRepository;
+    private SyncService syncService;
 
     @RequestMapping(path = "/sync", method = RequestMethod.POST)
     public void sync() throws IOException {
@@ -29,13 +28,21 @@ public class SyncController {
             throw new ForbiddenException();
         }
 
-        StravaUserEntity stravaUserEntity = stravaUserRepository.findByUsername(user.getUsername());
-        if (stravaUserEntity == null) {
-            log.error("No strava user for user {}!", user.getUsername());
-            throw new ForbiddenException();
-        }
+        syncService.syncUser(user.getUsername());
 
-        stravaUserEntity.setSyncRequired(true);
-        stravaUserRepository.save(stravaUserEntity);
+        boolean syncState;
+        do {
+            syncState = syncService.syncState(user.getUsername());
+            try {
+                log.info("Waiting for sync to complete on user {} ...", user.getUsername());
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                log.error("While waiting for sync to complete on user " + user.getUsername(), e);
+                break;
+            }
+        }
+        while(syncState);
+
+        log.info("Sync complete for user {} ...", user.getUsername());
     }
 }
