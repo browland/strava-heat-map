@@ -16,8 +16,8 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-public class NewUserTask {
-    private static final Logger logger = LoggerFactory.getLogger(NewUserTask.class);
+public class SyncActivitiesTask {
+    private static final Logger logger = LoggerFactory.getLogger(SyncActivitiesTask.class);
 
     @Autowired
     private StravaUserRepository stravaUserRepository;

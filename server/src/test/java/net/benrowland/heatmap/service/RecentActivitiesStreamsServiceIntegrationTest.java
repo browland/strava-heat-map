@@ -92,6 +92,7 @@ public class RecentActivitiesStreamsServiceIntegrationTest {
         final StravaUserEntity stravaUserEntity = new StravaUserEntity();
         stravaUserEntity.setStravaUsername(STRAVA_USERNAME);
         stravaUserEntity.setAccessToken(ACCESS_TOKEN);
+        stravaUserEntity.setLastActivityDatetime(activitiesAfterDate);
 
         StreamEntity expectedStreamEntity = new StreamEntity();
         expectedStreamEntity.setStravaUsername(STRAVA_USERNAME);
@@ -101,7 +102,7 @@ public class RecentActivitiesStreamsServiceIntegrationTest {
         List<StreamEntity> expectedStreams = Lists.newArrayList(expectedStreamEntity);
         LocalDateTime expectedLastActivityDateTime = LocalDateTime.of(2013, 8, 23, 17, 4, 12);
 
-        assertThat(recentActivitiesStreamsService.streamsForRecentActivitiesAndUpdateLastActivityDate(stravaUserEntity, activitiesAfterDate)).isEqualTo(expectedStreams);
+        assertThat(recentActivitiesStreamsService.streamsForRecentActivitiesAndUpdateLastActivityDate(stravaUserEntity)).isEqualTo(expectedStreams);
         assertThat(stravaUserEntity.getLastActivityDatetime()).isEqualTo(expectedLastActivityDateTime);
     }
 

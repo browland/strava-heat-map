@@ -34,8 +34,10 @@ public class ActivityClient {
         this.stravaApi = stravaApi;
     }
 
-    public Activity[] getActivities(StravaUserEntity stravaUserEntity, LocalDateTime afterDate) throws StravaApiException {
+    public Activity[] getActivities(StravaUserEntity stravaUserEntity) throws StravaApiException {
         verifyStravaUser(stravaUserEntity);
+
+        LocalDateTime afterDate = stravaUserEntity.getLastActivityDatetime();
 
         logger.info("Retrieving latest activities for athlete {} after date {}", stravaUserEntity.getStravaUsername(), afterDate);
 
