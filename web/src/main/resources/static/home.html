@@ -18,18 +18,16 @@
         background: transparent url(images/spinner.gif) no-repeat center;
       }
 
-      html, body, #map-canvas {
-        height: 90%;
-        margin: 0;
-        padding: 0;
+      #error {
+        color: red;
       }
 
     </style>
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=places&key=AIzaSyAo1VJgamiR5p_knFwA6V0uomIrTXM6xD4"></script>
-    <!--<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=places"></script>-->
-    <script>
 
+    <script>
 var data;
 var streams;
 var map;
@@ -37,6 +35,11 @@ var polygons = [];
 var setIntervalId;
 
 function initialize() {
+  screenHeight = window.innerHeight;
+  screenWidth = window.innerWidth;
+  $('#map-canvas').css('width', screenWidth + 'px');
+  $('#map-canvas').css('height', screenHeight - 150 + 'px');
+
   map = new google.maps.Map(document.getElementById('map-canvas'), {
     zoom: 10,
     center: {lat: 52.20, lng: -2.25}
@@ -63,6 +66,8 @@ function updatePolygons() {
   }
 
   var jqXHR = $.getJSON('/latestActivity', function(json) {
+    $('#error').html('');
+
     streams = json;
 
     if(streams.length < 10) {
@@ -97,7 +102,7 @@ function updatePolygons() {
   jqXHR.fail(function(jqXHR, textStatus, errorThrown) {
     if (jqXHR.status !== 200) {
       console.log('Could not fetch activities: ' + jqXHR.status + ' ' + textStatus);
-      document.location = 'login1.html';
+      $('#error').html('Could not fetch activities');
     }
   });
 }
@@ -108,25 +113,41 @@ google.maps.event.addDomListener(window, 'load', initialize);
 </head>
 
 <body>
-<h1>Strava Heat Map</h1>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-xs-9">
+        </div>
+        <div class="col-xs-3" style="text-align: right;">
+            <a href="/logout">Log Out</a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12">
+            <h1>Strava Heat Map</h1>
 
-<p>Showing overlaid areas of recent Strava activity.</p>
+            <p>Showing overlaid areas of recent Strava activity.</p>
 
-<form>
-    <table>
-       <tr>
-           <td>
-              <input style="font-family: Roboto" type="text" id="searchTextField" size="50" value="Worcester, United Kingdom"/>
-           </td>
-           <td>
-               <span id="syncIndicator"></span>
-           </td>
-       </tr>
-    </table>
-</form>
-<p></p>
-
-<div id="map-canvas"></div>
-
+            <form>
+                <table>
+                    <tr>
+                        <td>
+                            <input style="font-family: Roboto" type="text" id="searchTextField" size="50" value="Worcester, United Kingdom"/>
+                        </td>
+                        <td>
+                            <span id="error"></span>
+                        </td>
+                        <td>
+                            <span id="syncIndicator"></span>
+                        </td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+    </div>
+    <div class="row">
+        <div id="map-canvas" class="col-xs-12">
+        </div>
+    </div>
+</div>
 </body>
 </html>
