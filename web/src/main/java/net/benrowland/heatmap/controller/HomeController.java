@@ -18,7 +18,8 @@ import java.io.IOException;
 
 @RestController
 public class HomeController {
-    private static final Logger log = LoggerFactory.getLogger(LatestActivityController.class);
+    private static final Logger log = LoggerFactory.getLogger(HomeController.class);
+
     private static final String STRAVA_CONNECT_URL = "https://www.strava.com/oauth/authorize?" +
         "client_id=15346&response_type=code&redirect_uri=%stoken_exchange/&approval_prompt=force&state=%s";
 
