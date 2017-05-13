@@ -3,26 +3,28 @@ version: '2'
 services:
   database:
     image: mysql:5.7
-    container_name: heatmapdb
+    container_name: strava-heat-map-db
     volumes:
       - heatmapdbdata:/var/lib/mysql
     environment:
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
       - MYSQL_DATABASE=heatmapdb
+    restart: on-failure
 
   server:
-    image: benrowland.net:5000/strava-heat-map-server:1.0-SNAPSHOT
+    image: revo:5000/strava-heat-map-server:1.0-SNAPSHOT
     container_name: strava-heat-map-server
     environment:
       - strava.client.clientId=${STRAVA_CLIENT_ID}
       - strava.client.clientSecret=${STRAVA_CLIENT_SECRET}
-      - spring.datasource.url=jdbc:mysql://heatmapdb:3306/heatmapdb
+      - spring.datasource.url=jdbc:mysql://strava-heat-map-db:3306/heatmapdb
       - spring.datasource.password=${MYSQL_ROOT_PASSWORD}
+    restart: on-failure
     depends_on:
       - database
 
   web:
-    image: benrowland.net:5000/strava-heat-map-web:1.0-SNAPSHOT
+    image: revo:5000/strava-heat-map-web:1.0-SNAPSHOT
     container_name: strava-heat-map-web
     ports:
       - '8000:8080'
@@ -31,8 +33,9 @@ services:
       - strava.client.clientSecret=${STRAVA_CLIENT_SECRET}
       - VIRTUAL_HOST=${VIRTUAL_HOST}
       - external.endpointUrl=${EXTERNAL_ENDPOINT_URL}
-      - spring.datasource.url=jdbc:mysql://heatmapdb:3306/heatmapdb
+      - spring.datasource.url=jdbc:mysql://strava-heat-map-db:3306/heatmapdb
       - spring.datasource.password=${MYSQL_ROOT_PASSWORD}
+    restart: on-failure
     depends_on:
       - database
 
